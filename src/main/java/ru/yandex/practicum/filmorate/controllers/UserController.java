@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
@@ -26,14 +27,23 @@ public class UserController {
         user.setId(createId());
         validation(user);
         users.put(user.getId(), user);
+        log.debug("User {} is created", user.getLogin());
         return user;
     }
 
     @PutMapping(value = "/user")
     public User updateUser(@Valid @RequestBody User user) {
-        if (users.containsKey(user.getId())) {
-            validation(user);
-            users.replace(user.getId(), user);
+        try {
+            if (users.containsKey(user.getId())) {
+                validation(user);
+                users.replace(user.getId(), user);
+                log.debug("User {} is update", user.getLogin());
+            } else {
+                throw new ValidationException("There is no such user");
+            }
+        } catch (ValidationException ex) {
+            log.warn(ex.getMessage());
+            throw new ValidationException(ex);
         }
         return user;
     }
