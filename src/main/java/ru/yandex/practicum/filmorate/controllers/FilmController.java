@@ -14,54 +14,64 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequestMapping("/films")
 public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
     private static final LocalDate START_DATE = LocalDate.of(1895, 12, 28);
     private int id = 0;
 
-    @GetMapping("/films")
+    @GetMapping
     public List<Film> findAllFilms() {
         return new ArrayList<>(films.values());
     }
 
-    @PostMapping(value = "/film")
-    public Film createFilm(@Valid @RequestBody Film film) {
+    @PostMapping
+    public Film createFilm(@RequestBody Film film) { //добавить проверку на идентичность фильма с разными id?
         try {
+            validateFilm(film);
             film.setId(createId());
-            validation(film);
             films.put(film.getId(), film);
-            log.debug("Film <<{}>> is created", film.getName());
+            log.info("Film <<{}>> is created", film.getName());
         } catch (ValidationException ex) {
-            log.warn(ex.getMessage());
+            log.error(ex.getMessage());
             throw new ValidationException(ex);
         }
         return film;
     }
 
-    @PutMapping(value = "/film")
-    public Film updateFilm(@Valid @RequestBody Film film) {
+    @PutMapping
+    public Film updateFilm(@RequestBody Film film) {
         try {
-            validation(film);
+            validateFilm(film);
             if (films.containsKey(film.getId())) {
                 films.replace(film.getId(), film);
-                log.debug("Film <<{}>> is updated", film.getName());
+                log.info("Film <<{}>> is updated", film.getName());
             } else {
-                throw new ValidationException("There is no such movie");
+                throw new ValidationException("There is no such film");
             }
         } catch (ValidationException ex) {
-            log.warn(ex.getMessage());
+            log.error(ex.getMessage());
             throw new ValidationException(ex);
         }
         return film;
     }
 
     private int createId() {
-        return id++;
+        return ++id;
     }
 
-    public void validation(Film film) throws ValidationException {
+    public void validateFilm(Film film) throws ValidationException {
         if (film.getReleaseDate().isBefore(START_DATE)) {
             throw new ValidationException("date release cannot be earlier than 28.12.1895");
+        }
+        if (film.getName() == null || film.getName().isBlank()) {
+            throw new ValidationException("Name cannot be null or empty");
+        }
+        if (film.getDescription().length() > 200) {
+            throw new ValidationException("Description must be max 200 characters");
+        }
+        if (film.getDuration() <= 0) {
+            throw new ValidationException("Duration of the film must be positive");
         }
     }
 }

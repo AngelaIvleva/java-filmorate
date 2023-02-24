@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -8,6 +9,10 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Data
+@Builder
+
+// dont work anno, delete set&getters for id?
+
 public class Film {
     private int id;
     @NotBlank(message = "Name cannot be null or empty")
@@ -16,12 +21,5 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     @Positive(message = "Duration of the film must be positive")
-    private long duration;
-
-    public Film(String name, String description, LocalDate releaseDate, long duration) {
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-    }
+    private int duration;
 }
