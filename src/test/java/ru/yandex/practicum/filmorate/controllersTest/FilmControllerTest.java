@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controllersTest;
 
-import lombok.Builder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controllers.FilmController;

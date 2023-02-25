@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +42,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser( @RequestBody User user) {
+    public User updateUser(@RequestBody User user) {
         try {
             if (users.containsKey(user.getId())) {
                 validation(user);
