@@ -3,20 +3,24 @@ package ru.yandex.practicum.filmorate.controllersTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-
-import static org.junit.jupiter.api.Assertions.*;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
-public class FilmControllerTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+public class FilmControllerTest {
     FilmController filmController;
 
     @BeforeEach
     void beforeEach() {
-        filmController = new FilmController();
+        filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
     }
 
     @Test
@@ -56,7 +60,7 @@ public class FilmControllerTest {
                 .releaseDate(LocalDate.of(2001, 11, 16))
                 .duration(152)
                 .build();
-        assertThrows(ValidationException.class,  () -> filmController.createFilm(film));
+        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
     }
 
     @Test
@@ -83,7 +87,7 @@ public class FilmControllerTest {
                 .releaseDate(LocalDate.of(1895, 12, 27))
                 .duration(152)
                 .build();
-        assertThrows(ValidationException.class,  () -> filmController.createFilm(film));
+        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
     }
 
     @Test
@@ -100,9 +104,10 @@ public class FilmControllerTest {
                 .releaseDate(LocalDate.of(2001, 11, 16))
                 .duration(152)
                 .build();
-        assertThrows(ValidationException.class,  () -> filmController.createFilm(film));
+        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
 
     }
+
     @Test
     void shouldNotCreateFilmWhenDurationIsNegative() {
         Film film = Film.builder()
@@ -113,7 +118,7 @@ public class FilmControllerTest {
                 .releaseDate(LocalDate.of(2001, 11, 16))
                 .duration(-1)
                 .build();
-        assertThrows(ValidationException.class,  () -> filmController.createFilm(film));
+        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
     }
 
     @Test
@@ -141,7 +146,7 @@ public class FilmControllerTest {
                 .releaseDate(LocalDate.of(2001, 11, 16))
                 .duration(152)
                 .build();
-        assertThrows(ValidationException.class,  () -> filmController.updateFilm(film));
-
+        assertThrows(NotFoundException.class, () -> filmController.updateFilm(film));
     }
+
 }
