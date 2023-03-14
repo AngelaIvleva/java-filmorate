@@ -26,7 +26,6 @@ public class FilmControllerTest {
     @Test
     void shouldCreateFilm() {
         Film film = Film.builder()
-                .id(0)
                 .name("Harry Potter and the sorcerer's stone")
                 .description("The story of a boy who learns on his 11th birthday that he is the orphaned " +
                         "son of two powerful wizards and possesses unique magical powers of his own.")
@@ -40,7 +39,7 @@ public class FilmControllerTest {
     @Test
     void shouldAssignCorrectIdWhenCreateNewFilm() {
         Film film = Film.builder()
-                .id(33)
+                .id(33L)
                 .name("Harry Potter and the sorcerer's stone")
                 .description("The story of a boy who learns on his 11th birthday that he is the orphaned " +
                         "son of two powerful wizards and possesses unique magical powers of his own.")
@@ -53,7 +52,7 @@ public class FilmControllerTest {
     @Test
     void shouldNotCreateFilmWhenNameIsEmpty() {
         Film film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name(" ")
                 .description("The story of a boy who learns on his 11th birthday that he is the orphaned " +
                         "son of two powerful wizards and possesses unique magical powers of his own.")
@@ -66,7 +65,7 @@ public class FilmControllerTest {
     @Test
     void shouldCreateFilmWhenReleaseDateOnBirthOfCinema() {
         Film film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("Harry Potter and the sorcerer's stone")
                 .description("The story of a boy who learns on his 11th birthday that he is the orphaned " +
                         "son of two powerful wizards and possesses unique magical powers of his own.")
@@ -80,7 +79,7 @@ public class FilmControllerTest {
     @Test
     void shouldNotCreateFilmWhenReleaseDateBeforeBirthOfCinema() {
         Film film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("Harry Potter and the sorcerer's stone")
                 .description("The story of a boy who learns on his 11th birthday that he is the orphaned " +
                         "son of two powerful wizards and possesses unique magical powers of his own.")
@@ -93,7 +92,7 @@ public class FilmControllerTest {
     @Test
     void shouldNotCreateFilmWhenDescriptionLengthIsMore200() {
         Film film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("Harry Potter and the sorcerer's stone")
                 .description("Based on the first of J.K. Rowling's popular children's novels about Harry Potter. " +
                         "The story of a boy who learns on his 11th birthday that he is the orphaned " +
@@ -111,7 +110,7 @@ public class FilmControllerTest {
     @Test
     void shouldNotCreateFilmWhenDurationIsNegative() {
         Film film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("Harry Potter and the sorcerer's stone")
                 .description("The story of a boy who learns on his 11th birthday that he is the orphaned " +
                         "son of two powerful wizards and possesses unique magical powers of his own.")
@@ -124,7 +123,7 @@ public class FilmControllerTest {
     @Test
     void shouldUpdateFilm() {
         Film film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("Harry Potter")
                 .description("The story of a boy who learns on his 11th birthday that he is the orphaned " +
                         "son of two powerful wizards and possesses unique magical powers of his own.")
@@ -139,7 +138,7 @@ public class FilmControllerTest {
     @Test
     void shouldNotUpdateFilmWhenFilmIsNotFound() {
         Film film = Film.builder()
-                .id(0)
+                .id(0L)
                 .name("Harry Potter and the sorcerer's stone")
                 .description("The story of a boy who learns on his 11th birthday that he is the orphaned " +
                         "son of two powerful wizards and possesses unique magical powers of his own.")

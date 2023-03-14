@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +28,6 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User createUser(User user) {
         try {
-            validation(user);
             user.setId(createId());
             users.put(user.getId(), user);
             log.info("User {} is created", user.getLogin());
@@ -44,7 +42,6 @@ public class InMemoryUserStorage implements UserStorage {
     public User updateUser(User user) {
         try {
             if (users.containsKey(user.getId())) {
-                validation(user);
                 users.replace(user.getId(), user);
                 log.info("User {} is update", user.getLogin());
             } else {
@@ -74,28 +71,5 @@ public class InMemoryUserStorage implements UserStorage {
         } else {
             throw new NotFoundException("User ID " + id + "is not found");
         }
-    }
-
-    public void validation(User user) throws ValidationException {
-        if (user == null) {
-            throw new ValidationException("User cannot be null");
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            log.info("Name is empty. Login is set as Name");
-            user.setName(user.getLogin());
-        }
-        if (user.getEmail() == null || user.getName().isBlank()) {
-            throw new ValidationException("Email cannot be empty");
-        }
-        if (!user.getEmail().contains("@")) {
-            throw new ValidationException("Email doesn't contain @");
-        }
-        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            throw new ValidationException("Login cannot be wrong or empty");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Date of birth cannot be in the future");
-        }
-
     }
 }

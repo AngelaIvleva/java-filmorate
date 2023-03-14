@@ -58,7 +58,7 @@ public class UserService {
         }
     }
 
-    public List<User> getMutualFriends(Long userId, Long friendId) {
+    public List<User> getCommonFriends(Long userId, Long friendId) {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
         if (user.getFriendsList() != null && friend.getFriendsList() != null) {

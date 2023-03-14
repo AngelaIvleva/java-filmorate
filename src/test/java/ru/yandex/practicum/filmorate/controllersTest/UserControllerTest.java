@@ -285,7 +285,7 @@ public class UserControllerTest {
         assertEquals(2, user.getFriendsList().size());
         assertEquals(1, friend.getFriendsList().size());
         assertEquals(1, friend1.getFriendsList().size());
-        assertEquals(1, userController.getMutualFriends(friend1.getId(), friend.getId()).size());
+        assertEquals(1, userController.getCommonFriends(friend1.getId(), friend.getId()).size());
     }
 
     @Test
@@ -317,7 +317,7 @@ public class UserControllerTest {
         assertEquals(2, user.getFriendsList().size());
         assertEquals(1, friend.getFriendsList().size());
         assertEquals(1, friend1.getFriendsList().size());
-        assertThrows(NotFoundException.class, () -> userController.getMutualFriends(user.getId(), 6666L));
+        assertThrows(NotFoundException.class, () -> userController.getCommonFriends(user.getId(), 6666L));
     }
 
     @Test
