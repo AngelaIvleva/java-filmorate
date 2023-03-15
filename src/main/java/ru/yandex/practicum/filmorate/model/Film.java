@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.validation.IsAfterCinemaBirthday;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -16,7 +17,7 @@ public class Film {
     private String name;
     @Size(max = 200, message = "Description must be max 200 characters")
     private String description;
-    @PastOrPresent
+    @IsAfterCinemaBirthday
     private LocalDate releaseDate;
     @Positive(message = "Duration of the film must be positive")
     private int duration;

@@ -89,10 +89,12 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        validation(user);
         return userStorage.createUser(user);
     }
 
     public User updateUser(User user) {
+        validation(user);
         return userStorage.updateUser(user);
     }
 
@@ -102,5 +104,12 @@ public class UserService {
 
     public void deleteUserById(Long id) {
         userStorage.deleteUserById(id);
+    }
+
+    private void validation(User user) {
+        if  (user.getName() == null || user.getName().isBlank()) {
+            log.info("Name is empty. Login is set as Name");
+            user.setName(user.getLogin());
+        }
     }
 }
