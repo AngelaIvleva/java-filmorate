@@ -29,6 +29,7 @@ public class UserControllerTest {
             .name("Christopher Joseph Columbus")
             .birthday(LocalDate.of(1958, 9, 10))
             .build();
+
     @Test
     void shouldCreateUser() {
         assertThat(userController.createUser(user).getId())
