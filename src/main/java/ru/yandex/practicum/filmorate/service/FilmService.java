@@ -35,6 +35,7 @@ public class FilmService {
     public void deleteFilmById(int id) {
         filmStorage.deleteFilmById(id);
     }
+
     public void addLike(int filmId, int userId) {
         filmStorage.addLike(filmId, userId);
     }

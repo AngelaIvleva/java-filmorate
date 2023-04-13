@@ -7,5 +7,6 @@ import java.util.List;
 public interface GenreStorage {
 
     Genre getById(int id);
+
     List<Genre> getAll();
 }

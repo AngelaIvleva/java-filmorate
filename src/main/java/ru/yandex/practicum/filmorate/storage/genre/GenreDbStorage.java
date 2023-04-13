@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class GenreDbStorage implements GenreStorage{
+public class GenreDbStorage implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -30,6 +30,7 @@ public class GenreDbStorage implements GenreStorage{
         }
         return jdbcTemplate.queryForObject(sql, this::makeGenre, id);
     }
+
     @Override
     public List<Genre> getAll() {
         String sql = "SELECT * FROM GENRE";
@@ -38,9 +39,6 @@ public class GenreDbStorage implements GenreStorage{
     }
 
     private Genre makeGenre(ResultSet rs, int rowNum) throws SQLException {
-        return Genre.builder()
-                .id(rs.getInt("GENRE_ID"))
-                .name(rs.getString("GENRE_NAME"))
-                .build();
+        return Genre.builder().id(rs.getInt("GENRE_ID")).name(rs.getString("GENRE_NAME")).build();
     }
 }
