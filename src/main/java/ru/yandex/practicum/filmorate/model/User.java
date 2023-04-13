@@ -7,13 +7,12 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
 @Builder
 public class User {
-    private long id;
+    private int id;
     @NotBlank
     @Email(message = "invalid email")
     private String email;
@@ -22,12 +21,5 @@ public class User {
     private String name;
     @Past(message = "Date of birth cannot be in the future")
     private LocalDate birthday;
-    private Set<Long> friendsList;
-
-    public Set<Long> getFriendsList() {
-        if (friendsList == null) {
-            return new HashSet<>();
-        }
-        return friendsList;
-    }
+    private Set<Integer> friendsList;
 }
