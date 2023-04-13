@@ -154,9 +154,8 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM GENRE AS G " +
                 "JOIN FILM_GENRE AS FG ON G.GENRE_ID = FG.GENRE_ID " +
                 "WHERE FG.FILM_ID =?";
-        List<Genre> genres = jdbcTemplate.query(sql, (rs, rowNum) ->
+        return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE_NAME")), id);
-        return genres;
     }
 
     private void removeGenres(int id) {
