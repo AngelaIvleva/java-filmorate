@@ -8,6 +8,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,4 +29,11 @@ public class Film {
     private List<Genre> genres;
 
     private Mpa mpa;
+
+    public Set<Integer> getLikesList() {
+        if (likesList == null) {
+            return new HashSet<>();
+        }
+        return likesList;
+    }
 }

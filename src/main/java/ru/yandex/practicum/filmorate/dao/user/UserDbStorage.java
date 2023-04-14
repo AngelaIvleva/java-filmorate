@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.dao.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -95,6 +96,7 @@ public class UserDbStorage implements UserStorage {
         } else {
             jdbcTemplate.update(sqlForWrite, userId, friendId, FriendshipStatus.UNFOLLOW.toString());
         }
+        log.info("User {} subscribed to User {}", friendId, userId);
     }
 
     @Override
@@ -103,6 +105,7 @@ public class UserDbStorage implements UserStorage {
         validateUser(friendId);
         String sqlQuery = "DELETE FROM FRIENDS WHERE (USER_ID = ? AND FRIEND_ID =?) OR (USER_ID =? AND FRIEND_ID = ?)";
         jdbcTemplate.update(sqlQuery, userId, friendId, friendId, userId);
+        log.info("User {} unsubscribed from User {}", friendId, userId);
     }
 
     @Override
