@@ -13,7 +13,7 @@ import java.util.Set;
 @Data
 @Builder
 public class User {
-    private long id;
+    private int id;
     @NotBlank
     @Email(message = "invalid email")
     private String email;
@@ -22,9 +22,9 @@ public class User {
     private String name;
     @Past(message = "Date of birth cannot be in the future")
     private LocalDate birthday;
-    private Set<Long> friendsList;
+    private Set<Integer> friendsList;
 
-    public Set<Long> getFriendsList() {
+    public Set<Integer> getFriendsList() {
         if (friendsList == null) {
             return new HashSet<>();
         }

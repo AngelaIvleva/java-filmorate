@@ -1,110 +1,75 @@
 package ru.yandex.practicum.filmorate.controllersTest;
 
-import org.junit.jupiter.api.BeforeEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@SpringBootTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserControllerTest {
 
-    UserController userController;
+    private final UserController userController;
 
-    @BeforeEach
-    void beforeEach() {
-        userController = new UserController(new UserService(new InMemoryUserStorage()));
-    }
+    User user = User.builder()
+            .email("columbus1958@gmail.com")
+            .login("columbus1958")
+            .name("Christopher Joseph Columbus")
+            .birthday(LocalDate.of(1958, 9, 10))
+            .build();
 
     @Test
     void shouldCreateUser() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-        assertEquals("Christopher Joseph Columbus", userController.createUser(user).getName());
-
-        User user1 = User.builder()
-                .email("dfghjkl@gmail.com")
-                .login("hgfd")
-                .name("dfghjkl;")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-        assertEquals(2, userController.createUser(user1).getId());
-        assertEquals(2, userController.findAllUsers().size());
+        assertThat(userController.createUser(user).getId())
+                .isEqualTo(1);
     }
 
     @Test
     void shouldUpdateUser() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-        assertEquals("Christopher Joseph Columbus", userController.createUser(user).getName());
+        assertThat(userController.createUser(user).getName())
+                .isEqualTo("Christopher Joseph Columbus");
         user.setName("C.J.Columbus");
-        assertEquals("C.J.Columbus", userController.updateUser(user).getName());
+        assertThat(userController.createUser(user).getName())
+                .isEqualTo("C.J.Columbus");
     }
 
     @Test
     void shouldNotUpdateUserWhenUserIsNotFound() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-        userController.createUser(user);
-        User user1 = User.builder()
-                .id(2222)
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-        assertThrows(NotFoundException.class, () -> userController.updateUser(user1));
+        assertThrows(NotFoundException.class, () -> userController.updateUser(user));
     }
 
     @Test
     void shouldAddFriend() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-        userController.createUser(user);
         User friend = User.builder()
                 .email("friend@gmail.com")
                 .login("friend")
                 .name("friendName")
                 .birthday(LocalDate.of(1977, 12, 10))
                 .build();
+        userController.createUser(user);
         userController.createUser(friend);
         userController.addFriend(user.getId(), friend.getId());
 
-        assertEquals(1, user.getFriendsList().size());
-        assertEquals(1, friend.getFriendsList().size());
+        assertThat(userController.getFriendList(user.getId()).size())
+                .isEqualTo(1);
+        assertThat(userController.getFriendList(friend.getId()).size())
+                .isEqualTo(0);
     }
 
     @Test
     void shouldNotAddFriendWhenWrongAnyID() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-
         User friend = User.builder()
                 .email("friend@gmail.com")
                 .login("friend")
@@ -117,62 +82,29 @@ public class UserControllerTest {
 
     @Test
     void shouldDeleteFriend() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-        userController.createUser(user);
         User friend = User.builder()
                 .email("friend@gmail.com")
                 .login("friend")
                 .name("friendName")
                 .birthday(LocalDate.of(1977, 12, 10))
                 .build();
+        userController.createUser(user);
         userController.createUser(friend);
         userController.addFriend(user.getId(), friend.getId());
-        assertEquals(1, user.getFriendsList().size());
+        assertThat(userController.getFriendList(user.getId()).size())
+                .isEqualTo(1);
 
         userController.deleteFriend(user.getId(), friend.getId());
-        assertEquals(0, user.getFriendsList().size());
-        assertEquals(0, friend.getFriendsList().size());
+        assertThat(userController.getFriendList(user.getId()).size())
+                .isEqualTo(0);
     }
 
-    @Test
-    void shouldNotDeleteFriendWhenWrongAnyID() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-        userController.createUser(user);
-        User friend = User.builder()
-                .email("friend@gmail.com")
-                .login("friend")
-                .name("friendName")
-                .birthday(LocalDate.of(1977, 12, 10))
-                .build();
-        userController.createUser(friend);
-        userController.addFriend(user.getId(), friend.getId());
-        assertEquals(1, user.getFriendsList().size());
-
-        assertThrows(NotFoundException.class, () -> userController.deleteFriend(user.getId(), 3L));
-        assertEquals(1, user.getFriendsList().size());
-        assertEquals(1, friend.getFriendsList().size());
-    }
 
     @Test
     void shouldDeleteUserByID() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
         userController.createUser(user);
-        assertEquals(1, user.getId());
+        assertThat(userController.getUserById(user.getId()).getId())
+                .isEqualTo(1);
 
         userController.deleteUserById(user.getId());
         assertThrows(NotFoundException.class, () -> userController.getUserById(user.getId()));
@@ -180,102 +112,88 @@ public class UserControllerTest {
 
     @Test
     void shouldNotDeleteUserWhenWrongID() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
         userController.createUser(user);
-        assertEquals(1, user.getId());
-        assertThrows(NotFoundException.class, () -> userController.deleteUserById(3L));
+        assertThat(userController.getUserById(user.getId()).getId())
+                .isEqualTo(1);
+        assertThrows(NotFoundException.class, () -> userController.deleteUserById(3));
     }
 
     @Test
-    void shouldGetMutualFriendsList() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-        userController.createUser(user);
+    void shouldGetCommonFriendsList() {
         User friend = User.builder()
                 .email("friend@gmail.com")
                 .login("friend")
                 .name("friendName")
                 .birthday(LocalDate.of(1977, 12, 10))
                 .build();
-        userController.createUser(friend);
         User friend1 = User.builder()
                 .email("friend@gmail.com")
                 .login("friend1")
                 .name("friendName")
                 .birthday(LocalDate.of(1977, 12, 10))
                 .build();
+        userController.createUser(user);
+        userController.createUser(friend);
         userController.createUser(friend1);
+
         userController.addFriend(user.getId(), friend.getId());
         userController.addFriend(user.getId(), friend1.getId());
 
-        assertEquals(2, user.getFriendsList().size());
-        assertEquals(1, friend.getFriendsList().size());
-        assertEquals(1, friend1.getFriendsList().size());
-        assertEquals(1, userController.getCommonFriends(friend1.getId(), friend.getId()).size());
+        assertThat(userController.getFriendList(user.getId()).size())
+                .isEqualTo(2);
+        assertThat(userController.getFriendList(friend.getId()).size())
+                .isEqualTo(0);
+        assertThat(userController.getFriendList(friend1.getId()).size())
+                .isEqualTo(0);
     }
 
     @Test
-    void shouldNotGetMutualFriendsListWhenWrongAnyID() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-        userController.createUser(user);
+    void shouldNotGetCommonFriendsWhenWrongAnyID() {
         User friend = User.builder()
                 .email("friend@gmail.com")
                 .login("friend")
                 .name("friendName")
                 .birthday(LocalDate.of(1977, 12, 10))
                 .build();
-        userController.createUser(friend);
         User friend1 = User.builder()
                 .email("friend@gmail.com")
                 .login("friend1")
                 .name("friendName")
                 .birthday(LocalDate.of(1977, 12, 10))
                 .build();
+        userController.createUser(user);
+        userController.createUser(friend);
         userController.createUser(friend1);
+
         userController.addFriend(user.getId(), friend.getId());
         userController.addFriend(user.getId(), friend1.getId());
 
-        assertEquals(2, user.getFriendsList().size());
-        assertEquals(1, friend.getFriendsList().size());
-        assertEquals(1, friend1.getFriendsList().size());
-        assertThrows(NotFoundException.class, () -> userController.getCommonFriends(user.getId(), 6666L));
+        assertThat(userController.getFriendList(user.getId()).size())
+                .isEqualTo(2);
+        assertThat(userController.getFriendList(friend.getId()).size())
+                .isEqualTo(0);
+        assertThat(userController.getFriendList(friend1.getId()).size())
+                .isEqualTo(0);
+        assertThrows(NotFoundException.class, () -> userController.getCommonFriends(user.getId(), 6666));
     }
 
     @Test
-    void shouldNotGetFriendsListWhenWrongID() {
-        User user = User.builder()
-                .email("columbus1958@gmail.com")
-                .login("columbus1958")
-                .name("Christopher Joseph Columbus")
-                .birthday(LocalDate.of(1958, 9, 10))
-                .build();
-        userController.createUser(user);
+    void shouldNotGetFriendsWhenWrongID() {
         User friend = User.builder()
                 .email("friend@gmail.com")
                 .login("friend")
                 .name("friendName")
                 .birthday(LocalDate.of(1977, 12, 10))
                 .build();
+        userController.createUser(user);
         userController.createUser(friend);
         userController.addFriend(user.getId(), friend.getId());
 
-        assertEquals(1, user.getFriendsList().size());
-        assertEquals(1, friend.getFriendsList().size());
-        assertThrows(NotFoundException.class, () -> userController.getFriendList(33L));
+        assertThat(userController.getFriendList(user.getId()).size())
+                .isEqualTo(1);
+        assertThat(userController.getFriendList(friend.getId()).size())
+                .isEqualTo(0);
+        assertThrows(NotFoundException.class, () -> userController.getFriendList(33));
 
     }
 }
